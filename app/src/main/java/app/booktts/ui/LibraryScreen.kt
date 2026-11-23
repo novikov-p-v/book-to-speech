@@ -107,6 +107,7 @@ fun LibraryScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.library)) },
+                windowInsets = appBarInsets,
                 actions = {
                     IconButton(onClick = { showAbout = true }) {
                         Icon(Icons.Default.Info, contentDescription = stringResource(R.string.about))
@@ -125,8 +126,9 @@ fun LibraryScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
+        contentWindowInsets = contentInsets,
     ) { padding ->
-        Column(Modifier.padding(padding).fillMaxSize()) {
+        Column(Modifier.padding(padding.withoutBottom()).fillMaxSize()) {
             if (importing) {
                 LinearProgressIndicator(Modifier.fillMaxWidth())
                 Text(stringResource(R.string.importing), Modifier.padding(16.dp, 8.dp), style = MaterialTheme.typography.bodySmall)
@@ -139,11 +141,11 @@ fun LibraryScreen(
                 HorizontalDivider()
             }
             if (books.isEmpty() && !importing) {
-                Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.fillMaxSize().padding(padding.bottomOnly()).padding(32.dp), contentAlignment = Alignment.Center) {
                     Text(stringResource(R.string.empty_library), style = MaterialTheme.typography.bodyLarge)
                 }
             } else {
-                LazyColumn(Modifier.fillMaxSize()) {
+                LazyColumn(Modifier.fillMaxSize(), contentPadding = padding.bottomOnly(88.dp)) {
                     items(books.sortedByDescending { maxOf(it.lastOpenedAt, it.addedAt) }, key = { it.id }) { book ->
                         BookRow(book, onClick = { onOpen(book.id) }, onDelete = { toDelete = book })
                         HorizontalDivider()

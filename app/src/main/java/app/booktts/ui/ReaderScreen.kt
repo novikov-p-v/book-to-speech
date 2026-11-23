@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +13,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,6 +34,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -130,6 +138,7 @@ fun ReaderScreen(bookId: String, onBack: () -> Unit, onVoices: () -> Unit) {
                 navigationIcon = {
                     IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
+                windowInsets = appBarInsets,
                 actions = {
                     IconButton(onClick = { showChapters = true }, enabled = content != null) {
                         Icon(Icons.AutoMirrored.Filled.List, stringResource(R.string.chapters))
@@ -161,6 +170,7 @@ fun ReaderScreen(bookId: String, onBack: () -> Unit, onVoices: () -> Unit) {
                 )
             }
         },
+        contentWindowInsets = contentInsets,
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
             if (export != null && (export.state == WorkInfo.State.RUNNING || export.state == WorkInfo.State.ENQUEUED)) {
@@ -304,9 +314,17 @@ private fun PlayerBar(
     onNext: () -> Unit,
     onSpeed: (Float) -> Unit,
 ) {
-    Column(Modifier.navigationBarsPadding()) {
+    // Background drawn under the inset area too, so the strip below the bar matches its color.
+    Column(
+        Modifier
+            .background(BottomAppBarDefaults.containerColor)
+            .windowInsetsPadding(
+                WindowInsets.navigationBars.union(WindowInsets.displayCutout)
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            ),
+    ) {
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
-        BottomAppBar(windowInsets = androidx.compose.foundation.layout.WindowInsets(0)) {
+        BottomAppBar(windowInsets = WindowInsets(0)) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,

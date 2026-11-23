@@ -113,6 +113,7 @@ fun VoicesScreen(onBack: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.voices)) },
+                windowInsets = appBarInsets,
                 navigationIcon = {
                     IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) }
                 },
@@ -124,8 +125,9 @@ fun VoicesScreen(onBack: () -> Unit) {
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
+        contentWindowInsets = contentInsets,
     ) { padding ->
-        LazyColumn(Modifier.padding(padding).fillMaxSize()) {
+        LazyColumn(Modifier.padding(padding.withoutBottom()).fillMaxSize(), contentPadding = padding.bottomOnly()) {
             item {
                 Text(
                     stringResource(R.string.voices_hint),
