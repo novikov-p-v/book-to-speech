@@ -35,14 +35,31 @@ Gradle prints a warning.
 
 Run these as **separate** commands: per-ABI APK splits are switched off whenever a bundle task is requested.
 
-Before each upload, increase `versionCode` (and usually `versionName`) in `app/build.gradle.kts`.
+Before each upload, increase `versionCode` (and usually `versionName`) in `app/build.gradle.kts` — Play rejects
+a `versionCode` it has already seen. Rebuild after changing it, then verify the bundle:
+
+```bash
+keytool -printcert -jarfile app/build/outputs/bundle/release/app-release.aab | grep SHA1   # = upload key
+grep -rho 'android:version\(Code\|Name\)="[^"]*"' app/build/intermediates/merged_manifest/release/
+```
+
+Release notes in Play Console use language tags (≤ 500 chars per language):
+
+```
+<ru-RU>
+• ...
+</ru-RU>
+<en-US>
+• ...
+</en-US>
+```
 
 ## 3. Play Console checklist
 
 - [ ] Developer account (one-time $25, identity verification).
 - [ ] Create app: name "Book to Speech", default language, *App*, *Free*.
 - [ ] **App signing:** let Google manage the app signing key; upload the `.aab` signed with your upload key.
-- [ ] **Store listing:** texts below, 512×512 icon, 1024×500 feature graphic, ≥ 2 phone screenshots (`docs/screenshots/`).
+- [ ] **Store listing:** texts below, 512×512 icon, 1024×500 feature graphic, ≥ 2 phone screenshots (`docs/store/screenshots/`).
 - [ ] **Privacy policy URL:** `https://github.com/novikov-p-v/book-to-speech/blob/main/PRIVACY.md`
 - [ ] **Data safety:** no data collected, no data shared. (Downloads go directly to GitHub.)
 - [ ] **Ads:** no. **Content rating:** questionnaire (reference/education, no user content shared).
